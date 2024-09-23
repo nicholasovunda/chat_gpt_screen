@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_8.dart'; // Use Clipper 8 for rounder edges
+import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_8.dart'; // For rounder edges
 
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -47,6 +47,7 @@ class _ChatAppState extends State<ChatApp> {
   bool _isLoading = false;
   bool _isListening = false;
   bool _isSpeechAvailable = false;
+  bool _isTtsEnabled = true; // Toggle for TTS on/off
 
   @override
   void initState() {
@@ -69,7 +70,7 @@ class _ChatAppState extends State<ChatApp> {
     setState(() {
       _isLoading = true;
       _messages.add(ChatMessage(text: message, isMe: true));
-      _controller.clear(); // Clear the text field after sending
+      _controller.clear();
     });
     if (_isListening) {
       await _stopListening();
@@ -98,7 +99,11 @@ class _ChatAppState extends State<ChatApp> {
           _messages.add(ChatMessage(text: chatGptReply, isMe: false));
         });
         _scrollToBottom();
-        await _speak(chatGptReply);
+
+        // Speak only if TTS is enabled
+        if (_isTtsEnabled) {
+          await _speak(chatGptReply);
+        }
       } else {
         setState(() {
           _messages.add(ChatMessage(
@@ -114,6 +119,7 @@ class _ChatAppState extends State<ChatApp> {
     } finally {
       setState(() {
         _isLoading = false;
+        _controller.clear();
       });
     }
   }
@@ -154,6 +160,12 @@ class _ChatAppState extends State<ChatApp> {
     }
   }
 
+  void _toggleTts() {
+    setState(() {
+      _isTtsEnabled = !_isTtsEnabled;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,6 +180,16 @@ class _ChatAppState extends State<ChatApp> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isTtsEnabled ? Icons.volume_up : Icons.volume_off,
+              color: Colors.white,
+            ),
+            onPressed: _toggleTts, // Toggle TTS on/off
+            tooltip: 'Toggle Text-to-Speech',
+          ),
+        ],
       ),
       body: Container(
         color: Colors.black87,
