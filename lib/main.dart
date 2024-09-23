@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 void main() async {
@@ -67,7 +68,11 @@ class _ChatAppState extends State<ChatApp> {
     setState(() {
       _isLoading = true;
       _messages.add(ChatMessage(text: message, isMe: true));
+      _controller.clear();
     });
+    if (_isListening) {
+      await _stopListening();
+    }
     _scrollToBottom();
 
     try {
@@ -127,7 +132,10 @@ class _ChatAppState extends State<ChatApp> {
 
   Future<void> _startListening() async {
     if (_isSpeechAvailable && !_isListening) {
-      setState(() => _isListening = true);
+      setState(() {
+        _controller.clear();
+        _isListening = true;
+      });
       await _speech.listen(
         onResult: (result) {
           setState(() {
@@ -282,7 +290,7 @@ class MessageBubble extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width *
-            0.7, // Set max width to 70% of the screen
+            0.5, // Set max width to 70% of the screen
       ),
       decoration: BoxDecoration(
         color:
