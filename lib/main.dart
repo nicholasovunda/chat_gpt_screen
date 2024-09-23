@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
-import 'package:speech_to_text/speech_recognition_result.dart';
+// import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_chat_bubble/chat_bubble.dart';
+import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_1.dart';
 
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -167,45 +168,47 @@ class _ChatAppState extends State<ChatApp> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.menu, color: Colors.white),
-        //     onPressed: () {
-        //       Scaffold.of(context).openDrawer();
-        //     },
-        //   ),
-        // ],
-      ),
-      drawer: Drawer(
-        backgroundColor: Colors.black.withOpacity(0.7),
-        child: Container(), // Empty drawer
       ),
       body: Container(
         color: Colors.black87,
         child: Column(
           children: [
             Expanded(
-              child: Container(
-                color: Colors.black87,
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index) {
-                    return MessageBubble(
-                      message: _messages[index],
-                      onSpeakPressed: () => _speak(_messages[index].text),
-                    );
-                  },
-                ),
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[index];
+                  return ChatBubble(
+                    clipper: ChatBubbleClipper1(
+                      type: message.isMe
+                          ? BubbleType.sendBubble
+                          : BubbleType.receiverBubble,
+                    ),
+                    alignment:
+                        message.isMe ? Alignment.topRight : Alignment.topLeft,
+                    margin: const EdgeInsets.only(top: 10),
+                    backGroundColor:
+                        message.isMe ? Colors.blue : Colors.grey[300],
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      child: Text(
+                        message.text,
+                        style: TextStyle(
+                          color: message.isMe ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             if (_isLoading)
-              Container(
-                color: Colors.black87,
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
               ),
           ],
         ),
@@ -275,48 +278,3 @@ class ChatMessage {
 
   ChatMessage({required this.text, required this.isMe});
 }
-
-class MessageBubble extends StatelessWidget {
-  final ChatMessage message;
-  final VoidCallback onSpeakPressed;
-
-  const MessageBubble(
-      {required this.message, required this.onSpeakPressed, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width *
-            0.5, // Set max width to 70% of the screen
-      ),
-      decoration: BoxDecoration(
-        color:
-            message.isMe ? Colors.grey[850] : Colors.grey[700], //arker bubble
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment:
-            message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Flexible(
-            child: Text(
-              message.text,
-              style:
-                  TextStyle(color: message.isMe ? Colors.white : Colors.black),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.volume_up, color: Colors.white),
-            onPressed: onSpeakPressed,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-      //
