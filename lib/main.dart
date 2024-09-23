@@ -159,14 +159,14 @@ class _ChatAppState extends State<ChatApp> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.menu, color: Colors.white),
+        //     onPressed: () {
+        //       Scaffold.of(context).openDrawer();
+        //     },
+        //   ),
+        // ],
       ),
       drawer: Drawer(
         backgroundColor: Colors.black.withOpacity(0.7),
