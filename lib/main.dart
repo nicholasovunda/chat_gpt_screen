@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
-// import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_1.dart';
+import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_8.dart'; // Use Clipper 8 for rounder edges
 
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -69,7 +69,7 @@ class _ChatAppState extends State<ChatApp> {
     setState(() {
       _isLoading = true;
       _messages.add(ChatMessage(text: message, isMe: true));
-      _controller.clear();
+      _controller.clear(); // Clear the text field after sending
     });
     if (_isListening) {
       await _stopListening();
@@ -180,7 +180,7 @@ class _ChatAppState extends State<ChatApp> {
                 itemBuilder: (context, index) {
                   final message = _messages[index];
                   return ChatBubble(
-                    clipper: ChatBubbleClipper1(
+                    clipper: ChatBubbleClipper8(
                       type: message.isMe
                           ? BubbleType.sendBubble
                           : BubbleType.receiverBubble,
@@ -189,7 +189,7 @@ class _ChatAppState extends State<ChatApp> {
                         message.isMe ? Alignment.topRight : Alignment.topLeft,
                     margin: const EdgeInsets.only(top: 10),
                     backGroundColor:
-                        message.isMe ? Colors.blue : Colors.grey[300],
+                        message.isMe ? Colors.grey[800] : Colors.grey[600],
                     child: Container(
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -250,7 +250,6 @@ class _ChatAppState extends State<ChatApp> {
                 onPressed: () {
                   if (_controller.text.isNotEmpty) {
                     final message = _controller.text;
-                    _controller.clear();
                     _sendMessage(message);
                   }
                 },
