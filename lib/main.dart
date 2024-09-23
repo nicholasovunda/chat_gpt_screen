@@ -39,7 +39,7 @@ class ChatApp extends StatefulWidget {
 }
 
 class _ChatAppState extends State<ChatApp> {
-  final TextEditingController _controller = TextEditingController();
+  late TextEditingController _controller;
   final List<ChatMessage> _messages = [];
   final FlutterTts flutterTts = FlutterTts();
   final ScrollController _scrollController = ScrollController();
@@ -67,6 +67,7 @@ class _ChatAppState extends State<ChatApp> {
   }
 
   Future<void> _sendMessage(String message) async {
+    if (message.trim().isEmpty) return;
     setState(() {
       _isLoading = true;
       _messages.add(ChatMessage(text: message, isMe: true));
@@ -119,7 +120,6 @@ class _ChatAppState extends State<ChatApp> {
     } finally {
       setState(() {
         _isLoading = false;
-        _controller.clear();
       });
     }
   }
