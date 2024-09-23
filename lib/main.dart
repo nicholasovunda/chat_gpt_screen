@@ -24,12 +24,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ChatApp(),
+      home: const ChatApp(),
     );
   }
 }
 
 class ChatApp extends StatefulWidget {
+  const ChatApp({super.key});
+
   @override
   _ChatAppState createState() => _ChatAppState();
 }
@@ -53,7 +55,7 @@ class _ChatAppState extends State<ChatApp> {
 
   void _initTts() {
     flutterTts.setLanguage("en-US");
-    flutterTts.setSpeechRate(1.0);
+    flutterTts.setSpeechRate(0.5);
   }
 
   void _initSpeech() async {
@@ -200,45 +202,50 @@ class _ChatAppState extends State<ChatApp> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Enter your message...',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.grey[800]!),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.width * 0.04,
+        ),
+        child: Container(
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your message...',
+                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(color: Colors.grey[800]!),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[900],
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[900],
                 ),
               ),
-            ),
-            IconButton(
-              icon: Icon(
-                _isListening ? Icons.mic : Icons.mic_none,
-                color: Colors.white,
+              IconButton(
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  color: Colors.white,
+                ),
+                onPressed: _isListening ? _stopListening : _startListening,
               ),
-              onPressed: _isListening ? _stopListening : _startListening,
-            ),
-            IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
-              onPressed: () {
-                if (_controller.text.isNotEmpty) {
-                  final message = _controller.text;
-                  _controller.clear();
-                  _sendMessage(message);
-                }
-              },
-            ),
-          ],
+              IconButton(
+                icon: const Icon(Icons.send, color: Colors.white),
+                onPressed: () {
+                  if (_controller.text.isNotEmpty) {
+                    final message = _controller.text;
+                    _controller.clear();
+                    _sendMessage(message);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -266,8 +273,7 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback onSpeakPressed;
 
   const MessageBubble(
-      {required this.message, required this.onSpeakPressed, Key? key})
-      : super(key: key);
+      {required this.message, required this.onSpeakPressed, super.key});
 
   @override
   Widget build(BuildContext context) {
